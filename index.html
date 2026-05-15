@@ -1,407 +1,1586 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>GhostWorks Radar — Transformações Territoriais Invisíveis</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GhostWorks — Inteligência Territorial Semântica</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css"/>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@300;400;500&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+
 <style>
-:root{--bg:#060810;--bg2:#0d1117;--bg3:#111927;--amber:#FF9500;--amber-dim:#9A5A00;--teal:#00E5C0;--teal-dim:#006B5A;--red:#FF3B30;--red-dim:#7A1A15;--green:#30D158;--blue:#0A84FF;--text:#E8EDF4;--text-dim:#6B7A8D;--border:#1E2A38;--mono:'Space Mono',monospace;--sans:'Syne',sans-serif}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--sans);overflow-x:hidden}
-body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,229,192,.015) 2px,rgba(0,229,192,.015) 4px);pointer-events:none;z-index:9999}
-nav{position:fixed;top:0;left:0;right:0;z-index:1000;display:flex;align-items:center;justify-content:space-between;padding:16px 40px;background:rgba(6,8,16,.88);backdrop-filter:blur(12px);border-bottom:1px solid var(--border)}
-.nav-logo{font-family:var(--mono);font-size:13px;color:var(--teal);letter-spacing:.12em;text-transform:uppercase}
-.nav-logo span{color:var(--amber)}
-.nav-links{display:flex;gap:32px}
-.nav-links a{font-family:var(--mono);font-size:11px;color:var(--text-dim);text-decoration:none;letter-spacing:.08em;text-transform:uppercase;transition:color .2s}
-.nav-links a:hover{color:var(--teal)}
-.nav-badge{font-family:var(--mono);font-size:10px;color:var(--amber);border:1px solid var(--amber);padding:4px 10px;letter-spacing:.1em;animation:pulse-border 2s ease infinite}
-@keyframes pulse-border{0%,100%{border-color:var(--amber);opacity:1}50%{border-color:var(--amber-dim);opacity:.7}}
-.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:120px 80px 80px;position:relative;overflow:hidden}
-.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,192,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,192,.04) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 30%,transparent 100%)}
-.hero-tag{font-family:var(--mono);font-size:11px;color:var(--teal);letter-spacing:.25em;text-transform:uppercase;margin-bottom:20px;display:flex;align-items:center;gap:12px}
-.hero-tag::before{content:'';display:block;width:30px;height:1px;background:var(--teal)}
-.hero-title{font-weight:800;font-size:clamp(52px,8vw,96px);line-height:.92;letter-spacing:-.02em;margin-bottom:32px}
-.hero-title .l1{color:var(--text)}
-.hero-title .l2{color:transparent;-webkit-text-stroke:1px var(--amber)}
-.hero-title .l3{font-size:.42em;letter-spacing:.12em;font-weight:400;color:var(--text-dim);margin-top:16px;font-family:var(--mono)}
-.hero-sub{font-family:var(--mono);font-size:15px;color:var(--text-dim);line-height:1.7;max-width:580px;margin-bottom:56px}
-.hero-sub em{color:var(--text);font-style:normal}
-.hero-stats{display:flex;gap:48px;flex-wrap:wrap}
-.stat-item{display:flex;flex-direction:column;gap:6px}
-.stat-num{font-family:var(--mono);font-size:32px;font-weight:700;color:var(--teal);line-height:1}
-.stat-label{font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:.12em;text-transform:uppercase}
-.scroll-hint{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:.2em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:8px}
-.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--text-dim),transparent);animation:sb 1.5s ease infinite}
-@keyframes sb{0%,100%{opacity:.3;transform:scaleY(.5) translateY(-10px)}50%{opacity:1;transform:scaleY(1) translateY(0)}}
-.section{padding:100px 80px;position:relative}
-.sec-tag{font-family:var(--mono);font-size:10px;color:var(--amber);letter-spacing:.25em;text-transform:uppercase;margin-bottom:16px;display:flex;align-items:center;gap:10px}
-.sec-tag::before{content:'▶';font-size:8px}
-.sec-title{font-weight:800;font-size:clamp(36px,5vw,60px);line-height:1.05;letter-spacing:-.02em;margin-bottom:20px;max-width:700px}
-.sec-sub{font-family:var(--mono);font-size:13px;color:var(--text-dim);line-height:1.7;max-width:600px;margin-bottom:60px}
-.ranking-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start}
-.ranking-chart{display:flex;flex-direction:column;gap:12px}
-.rank-row{display:flex;align-items:center;gap:14px;opacity:0;transform:translateX(-20px);transition:all .5s ease}
-.rank-row.vis{opacity:1;transform:translateX(0)}
-.rank-num{font-family:var(--mono);font-size:10px;color:var(--text-dim);width:20px;text-align:right;flex-shrink:0}
-.rank-bwrap{flex:1;height:32px;background:var(--bg3);border:1px solid var(--border);position:relative;overflow:hidden}
-.rank-bar{height:100%;background:linear-gradient(90deg,var(--amber-dim),var(--amber));width:0%;transition:width 1s cubic-bezier(.4,0,.2,1)}
-.rank-bar.ne{background:linear-gradient(90deg,var(--teal-dim),var(--teal))}
-.rank-blabel{position:absolute;inset:0;display:flex;align-items:center;padding:0 12px;font-family:var(--mono);font-size:11px;color:rgba(255,255,255,.9);z-index:2;justify-content:space-between;pointer-events:none}
-.rank-pct{font-size:10px;color:rgba(255,255,255,.6)}
-.rank-insight{padding:32px;border:1px solid var(--border);background:var(--bg2);position:sticky;top:100px}
-.ins-title{font-family:var(--mono);font-size:10px;color:var(--teal);letter-spacing:.2em;text-transform:uppercase;margin-bottom:20px;padding-bottom:12px;border-bottom:1px solid var(--border)}
-.ins-body{font-family:var(--mono);font-size:13px;color:var(--text-dim);line-height:1.8;margin-bottom:16px}
-.ins-body strong{color:var(--teal)}
-.ne-box{display:flex;flex-direction:column;gap:8px;padding:16px;background:rgba(0,229,192,.05);border:1px solid var(--teal-dim);margin-top:16px}
-.ne-row{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:12px}
-.ne-state{color:var(--teal)}
-.ne-val{color:var(--text-dim)}
-.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:0 80px}
-.cases-section{padding:100px 80px}
-.cases-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-bottom:2px}
-.case-card{background:var(--bg2);border:1px solid var(--border);overflow:hidden;transition:border-color .3s,transform .3s;cursor:pointer}
-.case-card:hover{border-color:var(--amber);transform:translateY(-2px)}
-.iw{position:relative;aspect-ratio:1;overflow:hidden;background:#000;user-select:none}
-.img-b,.img-a{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;image-rendering:pixelated;pointer-events:none}
-.img-a{clip-path:inset(0 50% 0 0)}
-.slider-zone{position:absolute;inset:0;cursor:col-resize;z-index:10}
-.sline{position:absolute;top:0;bottom:0;left:50%;width:2px;background:var(--amber);transform:translateX(-1px);pointer-events:none}
-.shandle{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:32px;height:32px;border-radius:50%;background:var(--amber);display:flex;align-items:center;justify-content:center;pointer-events:none;font-size:14px;color:var(--bg);font-weight:700;box-shadow:0 0 20px rgba(255,149,0,.5)}
-.ybadge{position:absolute;font-family:var(--mono);font-size:10px;letter-spacing:.1em;padding:4px 8px;background:rgba(0,0,0,.85);z-index:5;pointer-events:none}
-.ybadge.bef{top:10px;left:10px;color:var(--text-dim);border:1px solid var(--text-dim)}
-.ybadge.aft{top:10px;right:10px;color:var(--amber);border:1px solid var(--amber)}
-.sat-badge{position:absolute;bottom:10px;left:10px;font-family:var(--mono);font-size:9px;color:var(--teal);letter-spacing:.1em;padding:3px 8px;background:rgba(0,229,192,.1);border:1px solid var(--teal-dim);z-index:5;pointer-events:none}
-.cbody{padding:20px}
-.crank{font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:.15em;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center}
-.ctype{font-size:10px;padding:2px 8px}
-.td{color:var(--red);border:1px solid var(--red-dim)}
-.tm{color:var(--amber);border:1px solid var(--amber-dim)}
-.ta{color:var(--green);border:1px solid rgba(48,209,88,.3)}
-.tu{color:var(--blue);border:1px solid rgba(10,132,255,.3)}
-.tx{color:var(--teal);border:1px solid var(--teal-dim)}
-.cname{font-weight:700;font-size:17px;margin-bottom:8px;line-height:1.2}
-.ccoords{font-family:var(--mono);font-size:10px;color:var(--text-dim);margin-bottom:16px}
-.cmetrics{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding-top:14px;border-top:1px solid var(--border)}
-.metric{display:flex;flex-direction:column;gap:2px}
-.mlabel{font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase}
-.mval{font-family:var(--mono);font-size:14px;font-weight:700}
-.mval.p{color:var(--green)}.mval.n{color:var(--red)}.mval.x{color:var(--amber)}
-.earth-btn{display:flex;align-items:center;gap:8px;margin-top:16px;padding:10px 14px;background:transparent;border:1px solid var(--border);color:var(--text-dim);font-family:var(--mono);font-size:11px;letter-spacing:.08em;cursor:pointer;text-decoration:none;width:100%;justify-content:center;transition:all .2s}
-.earth-btn:hover{border-color:var(--teal);color:var(--teal);background:rgba(0,229,192,.05)}
-.mini-row{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
-.mini{background:var(--bg2);border:1px solid var(--border);padding:16px 14px;display:flex;flex-direction:column;gap:8px;cursor:pointer;transition:border-color .2s}
-.mini:hover{border-color:var(--amber)}
-.mini-rk{font-family:var(--mono);font-size:9px;color:var(--text-dim);letter-spacing:.12em}
-.mini-stt{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--amber);line-height:1}
-.mini-coords{font-family:var(--mono);font-size:9px;color:var(--text-dim);line-height:1.5}
-.mini-bar{height:2px;background:var(--border);position:relative;margin-top:auto}
-.mini-fill{position:absolute;top:0;left:0;height:100%;background:var(--amber)}
-.map-section{padding:100px 80px}
-.map-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:40px;flex-wrap:wrap;gap:20px}
-.legend{display:flex;gap:20px;flex-wrap:wrap;align-items:center}
-.li{display:flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;color:var(--text-dim)}
-.ldot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
-#gmap{height:600px;border:1px solid var(--border);background:#0a0f1a}
-.map-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:2px}
-.ms{background:var(--bg2);border:1px solid var(--border);padding:20px}
-.ms-n{font-family:var(--mono);font-size:28px;font-weight:700;color:var(--teal);margin-bottom:4px}
-.ms-l{font-family:var(--mono);font-size:10px;color:var(--text-dim);letter-spacing:.1em;text-transform:uppercase}
-.meth{padding:100px 80px;background:var(--bg2)}
-.meth-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:2px;margin-top:40px}
-.mcard{padding:28px;border:1px solid var(--border);background:var(--bg)}
-.mn{font-family:var(--mono);font-size:28px;color:var(--teal);margin-bottom:12px}
-.mt{font-weight:700;font-size:16px;margin-bottom:10px}
-.md{font-family:var(--mono);font-size:12px;color:var(--text-dim);line-height:1.7}
-footer{padding:60px 80px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr 1fr;gap:40px}
-.ft{font-family:var(--mono);font-size:10px;color:var(--teal);letter-spacing:.2em;text-transform:uppercase;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border)}
-.fb{font-family:var(--mono);font-size:12px;color:var(--text-dim);line-height:1.8}
-.fb strong{color:var(--text)}
-.fbadge{margin-top:40px;padding-top:24px;border-top:1px solid var(--border);grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-.flogo{font-family:var(--mono);font-size:12px;color:var(--text-dim)}
-.flogo span{color:var(--teal)}
-.fcr{font-family:var(--mono);font-size:11px;color:var(--text-dim)}
-@media(max-width:900px){nav{padding:16px 24px}.nav-links{display:none}.hero,.section,.cases-section,.map-section,.meth{padding:60px 24px}.divider{margin:0 24px}.ranking-grid{grid-template-columns:1fr}.cases-grid{grid-template-columns:1fr}.mini-row{grid-template-columns:repeat(2,1fr)}.map-stats{grid-template-columns:repeat(2,1fr)}.meth-grid{grid-template-columns:1fr 1fr}footer{grid-template-columns:1fr;padding:40px 24px}}
+:root {
+  --bg:        #060912;
+  --bg2:       #0b1120;
+  --bg3:       #111827;
+  --text:      #ddd8cc;
+  --muted:     #7a7668;
+  --amber:     #f59e0b;
+  --amber-dim: #92600a;
+  --cyan:      #22d3ee;
+  --red:       #ef4444;
+  --green:     #22c55e;
+  --border:    rgba(255,255,255,0.07);
+  --ff-serif:  'Playfair Display', Georgia, serif;
+  --ff-mono:   'IBM Plex Mono', 'Courier New', monospace;
+  --ff-sans:   'Barlow', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--ff-sans);
+  font-weight: 300;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── SCROLLBAR ─────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 2px; }
+
+/* ── UTILS ─────────────────────────────────────────────────── */
+.mono { font-family: var(--ff-mono); }
+.serif { font-family: var(--ff-serif); }
+.amber { color: var(--amber); }
+.cyan  { color: var(--cyan); }
+.muted { color: var(--muted); }
+
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+section {
+  padding: 96px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.section-label {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.section-label::before {
+  content: '';
+  display: inline-block;
+  width: 24px;
+  height: 1px;
+  background: var(--amber);
+}
+
+h2 {
+  font-family: var(--ff-serif);
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 600;
+  line-height: 1.2;
+  color: #f0ece3;
+  margin-bottom: 20px;
+}
+
+h3 {
+  font-family: var(--ff-serif);
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: #e8e4d9;
+  margin-bottom: 12px;
+}
+
+p {
+  color: #9d9a8f;
+  font-size: 1rem;
+  line-height: 1.75;
+}
+
+/* ── NAV ───────────────────────────────────────────────────── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(to bottom, rgba(6,9,18,0.95), transparent);
+  backdrop-filter: blur(4px);
+}
+
+.nav-logo {
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  color: var(--amber);
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 28px;
+  list-style: none;
+}
+
+.nav-links a {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color .2s;
+}
+.nav-links a:hover { color: var(--text); }
+
+@media (max-width: 600px) { .nav-links { display: none; } }
+
+/* ── HERO ──────────────────────────────────────────────────── */
+#hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  position: relative;
+  overflow: hidden;
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+}
+
+#hero-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.35;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2;
+  padding: 120px 24px 80px;
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.hero-eyebrow {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--amber);
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeUp .8s .2s ease forwards;
+}
+
+.hero-title {
+  font-family: var(--ff-serif);
+  font-size: clamp(3rem, 10vw, 7.5rem);
+  font-weight: 700;
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  color: #f4f0e8;
+  margin-bottom: 8px;
+  opacity: 0;
+  animation: fadeUp .8s .35s ease forwards;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--amber);
+}
+
+.hero-sub {
+  font-family: var(--ff-mono);
+  font-size: clamp(12px, 2vw, 15px);
+  color: var(--cyan);
+  letter-spacing: 0.08em;
+  margin-bottom: 36px;
+  opacity: 0;
+  animation: fadeUp .8s .5s ease forwards;
+}
+
+.hero-desc {
+  font-size: clamp(1rem, 2vw, 1.15rem);
+  color: #8a8679;
+  max-width: 580px;
+  line-height: 1.75;
+  margin-bottom: 56px;
+  opacity: 0;
+  animation: fadeUp .8s .65s ease forwards;
+}
+
+.hero-stats {
+  display: flex;
+  gap: 40px;
+  flex-wrap: wrap;
+  opacity: 0;
+  animation: fadeUp .8s .8s ease forwards;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.stat-value {
+  font-family: var(--ff-mono);
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: #f0ece3;
+  line-height: 1;
+}
+
+.stat-label {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.scroll-hint {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  animation: fadeUp .8s 1.2s ease forwards;
+}
+
+.scroll-hint span {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+}
+
+.scroll-line {
+  width: 1px;
+  height: 48px;
+  background: linear-gradient(to bottom, var(--amber), transparent);
+  animation: scrollPulse 2s ease infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: .4; transform: scaleY(1); }
+  50%       { opacity: 1;  transform: scaleY(1.1); }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── PROBLEMA ──────────────────────────────────────────────── */
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2px;
+  margin-top: 56px;
+}
+
+.prob-card {
+  background: var(--bg2);
+  padding: 36px 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.prob-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--border);
+}
+
+.prob-card.highlight::before { background: var(--amber); }
+
+.prob-card .card-num {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  margin-bottom: 20px;
+}
+
+.prob-card h3 {
+  font-size: 1.05rem;
+  margin-bottom: 16px;
+}
+
+.prob-card p { font-size: .9rem; }
+
+.prob-card ul {
+  list-style: none;
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.prob-card ul li {
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.prob-card ul li::before { content: '—'; color: var(--border); flex-shrink: 0; }
+.prob-card.highlight ul li { color: #9d9a8f; }
+.prob-card.highlight ul li::before { color: var(--amber); }
+
+/* ── PIPELINE ──────────────────────────────────────────────── */
+#pipeline { background: var(--bg2); }
+
+.pipe-flow {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 56px;
+  position: relative;
+}
+
+.pipe-step {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 24px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--border);
+  align-items: start;
+  opacity: 0;
+  transform: translateX(-16px);
+  transition: opacity .5s, transform .5s;
+}
+
+.pipe-step.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.pipe-num {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--amber);
+  padding-top: 3px;
+  text-align: right;
+}
+
+.pipe-body h3 {
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  color: #e8e4d9;
+  margin-bottom: 6px;
+}
+
+.pipe-body p { font-size: .9rem; }
+
+.pipe-body .tag {
+  display: inline-block;
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  padding: 3px 10px;
+  background: rgba(245,158,11,.1);
+  border: 1px solid rgba(245,158,11,.2);
+  color: var(--amber);
+  border-radius: 2px;
+  margin-top: 10px;
+}
+
+/* ── STT ───────────────────────────────────────────────────── */
+.stt-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  margin-top: 56px;
+  align-items: start;
+}
+
+@media (max-width: 720px) { .stt-wrap { grid-template-columns: 1fr; } }
+
+.stt-concept p {
+  margin-bottom: 16px;
+  font-size: .95rem;
+}
+
+.stt-concept .formula {
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--amber);
+  padding: 20px 24px;
+  margin: 24px 0;
+  line-height: 1.8;
+  color: #b8b4a8;
+}
+
+.stt-concept .formula .hl { color: var(--amber); }
+
+.stt-table {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.stt-row {
+  display: grid;
+  grid-template-columns: 1.4fr 100px 1fr;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+  gap: 16px;
+  transition: background .2s;
+}
+.stt-row:hover { background: rgba(255,255,255,.02); }
+.stt-row:last-child { border-bottom: none; }
+
+.stt-row-header {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--bg);
+}
+
+.stt-range {
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  color: #b8b4a8;
+}
+
+.stt-bar {
+  height: 4px;
+  border-radius: 2px;
+}
+
+.stt-interp {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+}
+
+/* ── EXPLORAÇÕES ───────────────────────────────────────────── */
+.cases-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2px;
+  margin-top: 56px;
+}
+
+.case-card {
+  background: var(--bg2);
+  padding: 32px 28px;
+  position: relative;
+  cursor: default;
+  transition: background .2s;
+}
+
+.case-card:hover { background: #0f1826; }
+
+.case-tag {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--cyan);
+  margin-bottom: 16px;
+}
+
+.case-card h3 { font-size: 1.1rem; margin-bottom: 8px; }
+.case-card p  { font-size: .88rem; margin-bottom: 20px; }
+
+.case-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.case-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.case-metric-label {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+}
+
+.case-metric-val {
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--amber);
+}
+
+.case-metric-val.red   { color: var(--red); }
+.case-metric-val.green { color: var(--green); }
+.case-metric-val.cyan  { color: var(--cyan); }
+
+/* ── TRAJETÓRIA VISUAL ─────────────────────────────────────── */
+.traj-wrap {
+  margin-top: 56px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  padding: 36px;
+}
+
+.traj-title {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+  margin-bottom: 24px;
+  text-transform: uppercase;
+}
+
+.traj-chart {
+  position: relative;
+  height: 120px;
+  display: flex;
+  align-items: flex-end;
+  gap: 0;
+}
+
+.traj-bar-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  height: 100%;
+  justify-content: flex-end;
+}
+
+.traj-bar {
+  width: 100%;
+  max-width: 40px;
+  border-radius: 2px 2px 0 0;
+  transition: opacity .2s;
+  position: relative;
+}
+
+.traj-bar:hover { opacity: .8; }
+
+.traj-bar-val {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  color: var(--muted);
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.traj-year {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.traj-lines {
+  position: absolute;
+  left: 0; right: 0;
+  top: 0; bottom: 0;
+  pointer-events: none;
+}
+
+.traj-line-alerta, .traj-line-extremo {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.traj-line-label {
+  font-family: var(--ff-mono);
+  font-size: 9px;
+  letter-spacing: .05em;
+  padding-right: 4px;
+  white-space: nowrap;
+}
+
+/* ── SIMILAR REGIONS ───────────────────────────────────────── */
+.similar-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 2px;
+  margin-top: 32px;
+}
+
+.sim-item {
+  background: var(--bg2);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.sim-coords {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--cyan);
+}
+
+.sim-score {
+  font-family: var(--ff-mono);
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: var(--amber);
+}
+
+.sim-label {
+  font-size: .8rem;
+  color: var(--muted);
+}
+
+/* ── CAPACIDADES ───────────────────────────────────────────── */
+#capacidades { background: var(--bg2); }
+
+.cap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 2px;
+  margin-top: 56px;
+}
+
+.cap-item {
+  background: var(--bg);
+  padding: 28px 24px;
+}
+
+.cap-icon {
+  font-family: var(--ff-mono);
+  font-size: 13px;
+  color: var(--amber);
+  margin-bottom: 14px;
+  letter-spacing: .1em;
+}
+
+.cap-item h3 {
+  font-family: var(--ff-sans);
+  font-weight: 400;
+  font-size: 1rem;
+  margin-bottom: 8px;
+  color: #e0dcd2;
+}
+
+.cap-item p { font-size: .85rem; }
+
+/* ── PESQUISA ──────────────────────────────────────────────── */
+.research-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  padding: 28px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.research-row:last-child { border-bottom: none; }
+
+.research-badge {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  letter-spacing: .1em;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.research-badge.active {
+  border-color: rgba(245,158,11,.3);
+  color: var(--amber);
+  background: rgba(245,158,11,.05);
+}
+
+.research-body h3 {
+  font-family: var(--ff-sans);
+  font-size: 1rem;
+  font-weight: 400;
+  color: #e0dcd2;
+  margin-bottom: 4px;
+}
+
+.research-body p { font-size: .88rem; }
+
+.research-link {
+  display: inline-block;
+  margin-top: 10px;
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  letter-spacing: .1em;
+  color: var(--cyan);
+  text-decoration: none;
+}
+.research-link:hover { text-decoration: underline; }
+
+/* ── SOBRE ─────────────────────────────────────────────────── */
+#sobre { background: var(--bg2); }
+
+.sobre-wrap {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 56px;
+  margin-top: 56px;
+}
+
+@media (max-width: 720px) { .sobre-wrap { grid-template-columns: 1fr; } }
+
+.sobre-text p {
+  margin-bottom: 16px;
+  font-size: .95rem;
+}
+
+.sobre-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sobre-link-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--bg);
+  padding: 16px 20px;
+}
+
+.sobre-link-name {
+  font-family: var(--ff-mono);
+  font-size: 12px;
+  color: var(--text);
+}
+
+.sobre-link-url {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--cyan);
+  text-decoration: none;
+  letter-spacing: .05em;
+}
+.sobre-link-url:hover { text-decoration: underline; }
+
+/* ── FOOTER ────────────────────────────────────────────────── */
+footer {
+  padding: 40px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer-left {
+  font-family: var(--ff-mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: .1em;
+}
+
+.footer-right {
+  font-family: var(--ff-mono);
+  font-size: 10px;
+  color: #3d3a32;
+  letter-spacing: .08em;
+  text-align: right;
+}
+
+/* ── INTERSECTION OBSERVER REVEALS ────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 </style>
 </head>
+
 <body>
+
+<!-- ── NAV ───────────────────────────────────────────────────── -->
 <nav>
-  <div class="nav-logo">Ghost<span>Works</span> // Radar</div>
-  <div class="nav-links">
-    <a href="#finding">O Achado</a>
-    <a href="#cases">Top 10</a>
-    <a href="#gmap">Mapa</a>
-    <a href="#meth">Metodologia</a>
-  </div>
-  <div class="nav-badge">LIVE DATA 2017–2024</div>
+  <a href="#hero" class="nav-logo">GW_SYSTEM</a>
+  <ul class="nav-links">
+    <li><a href="#problema">Problema</a></li>
+    <li><a href="#pipeline">Tecnologia</a></li>
+    <li><a href="#exploracoes">Explorações</a></li>
+    <li><a href="#pesquisa">Pesquisa</a></li>
+    <li><a href="#sobre">Sobre</a></li>
+  </ul>
 </nav>
 
-<section class="hero">
-  <div class="hero-grid"></div>
-  <div class="hero-tag">Sistema de Inteligência Territorial · Brasil</div>
-  <h1 class="hero-title">
-    <div class="l1">GHOST</div>
-    <div class="l2">WORKS</div>
-    <div class="l3">RADAR · BRAZIL</div>
-  </h1>
-  <p class="hero-sub">
-    O Brasil se transforma em silêncio. <em>5.568 municípios</em> monitorados via
-    imagem de satélite entre 2017 e 2024. Este radar detecta onde o território mudou
-    de forma incomum — <em>antes que alguém perceba.</em>
-  </p>
-  <div class="hero-stats">
-    <div class="stat-item"><div class="stat-num" id="c1">0</div><div class="stat-label">Municípios</div></div>
-    <div class="stat-item"><div class="stat-num" id="c2">0</div><div class="stat-label">Anos de Dados</div></div>
-    <div class="stat-item"><div class="stat-num" id="c3">0</div><div class="stat-label">Hotspots</div></div>
-    <div class="stat-item"><div class="stat-num">4</div><div class="stat-label">Sensores Cruzados</div></div>
+<!-- ── HERO ──────────────────────────────────────────────────── -->
+<section id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-eyebrow">LuxVerso Research Initiative · Salvador, Bahia</div>
+    <h1 class="hero-title">Ghost<em>Works</em></h1>
+    <div class="hero-sub mono">Uma nova forma de detectar transformação territorial com IA</div>
+    <p class="hero-desc">
+      O planeta muda o tempo todo. A maior parte dessas mudanças passa despercebida 
+      porque ninguém estava programado para detectá-las. GhostWorks usa IA e dados 
+      de satélite para transformar território em espaço computacional — e encontrar 
+      o que nenhum sistema foi treinado para procurar.
+    </p>
+    <div class="hero-stats">
+      <div class="stat">
+        <span class="stat-value mono amber">64D</span>
+        <span class="stat-label">espaço vetorial</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value mono">2017–2024</span>
+        <span class="stat-label">cobertura temporal</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value mono cyan">Global</span>
+        <span class="stat-label">escala operacional</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value mono">0.96</span>
+        <span class="stat-label">similaridade máxima detectada</span>
+      </div>
+    </div>
   </div>
-  <div class="scroll-hint"><span>SCROLL</span><div class="scroll-line"></div></div>
+  <div class="scroll-hint">
+    <span>explorar</span>
+    <div class="scroll-line"></div>
+  </div>
 </section>
 
-<section class="section" id="finding">
-  <div class="sec-tag">Achado Principal</div>
-  <h2 class="sec-title">O Nordeste lidera. Ninguém estava olhando.</h2>
-  <p class="sec-sub">O ranking revela um padrão contraintuitivo: estados nordestinos dominam a transformação territorial — não pelas razões esperadas, mas por dinâmicas que o monitoramento convencional ignora.</p>
-  <div class="ranking-grid">
-    <div class="ranking-chart" id="rc"></div>
-    <div class="rank-insight">
-      <div class="ins-title">// ANÁLISE DO PADRÃO</div>
-      <p class="ins-body">A hipótese central: os estados nordestinos lideram por <strong>expansão de infraestrutura de energia renovável</strong> — parques eólicos e solares que alteram a paisagem em tempo recorde.</p>
-      <p class="ins-body">Combinado com <strong>fronteiras agrícolas no MATOPIBA</strong> e <strong>garimpo ilegal</strong> na faixa amazônica, o Brasil revela uma transformação territorial invisível para métricas tradicionais.</p>
-      <div class="ne-box">
-        <div style="font-family:var(--mono);font-size:9px;color:var(--teal);letter-spacing:.15em;text-transform:uppercase;margin-bottom:8px;">Destaques Nordeste ↓</div>
-        <div class="ne-row"><span class="ne-state">Alagoas</span><span class="ne-val">STT médio 0.048 · #3 Brasil</span></div>
-        <div class="ne-row"><span class="ne-state">Pernambuco</span><span class="ne-val">STT max 0.198 · #4 Brasil</span></div>
-        <div class="ne-row"><span class="ne-state">Rio Grande do Norte</span><span class="ne-val">STT médio 0.045 · #5</span></div>
-        <div class="ne-row"><span class="ne-state">Sergipe</span><span class="ne-val">STT médio 0.044 · #8</span></div>
-        <div class="ne-row"><span class="ne-state">Paraíba</span><span class="ne-val">STT médio 0.043 · #10</span></div>
+<!-- ── PROBLEMA ───────────────────────────────────────────────── -->
+<section id="problema">
+  <div class="container">
+    <div class="section-label">01 · O Problema</div>
+    <h2>Monitorar o planeta<br>ainda é caro, lento e reativo</h2>
+    <p style="max-width:600px">
+      Os sistemas existentes detectam o que alguém definiu que precisava ser detectado. 
+      Tudo o que ainda não tem nome — não aparece em nenhum relatório.
+    </p>
+
+    <div class="grid-3 reveal">
+      <div class="prob-card">
+        <div class="card-num">01 / HOJE</div>
+        <h3>Como funciona agora</h3>
+        <p>Alguém decide que quer monitorar desmatamento. Cria regras. O sistema detecta desmatamento. Só.</p>
+        <ul>
+          <li>Detecta apenas o que foi programado</li>
+          <li>Reage depois que a mudança já aconteceu</li>
+          <li>Caro e dependente de especialistas</li>
+          <li>Não funciona fora do escopo definido</li>
+        </ul>
+      </div>
+
+      <div class="prob-card">
+        <div class="card-num">02 / ALTERNATIVA</div>
+        <h3>Satélites têm dados. E daí?</h3>
+        <p>Existem petabytes de imagens de satélite disponíveis. O problema não é falta de dados — é falta de interpretação automática.</p>
+        <ul>
+          <li>Dados demais, interpretação de menos</li>
+          <li>Cada análise precisa de um especialista</li>
+          <li>Difícil comparar regiões diferentes</li>
+          <li>Não detecta o inesperado</li>
+        </ul>
+      </div>
+
+      <div class="prob-card highlight">
+        <div class="card-num">03 / GHOSTWORKS</div>
+        <h3>E se o sistema não precisasse saber o que procurar?</h3>
+        <p>GhostWorks converte território em vetores matemáticos e compara. O que mudou aparece — mesmo que ninguém tenha dado um nome pra isso.</p>
+        <ul>
+          <li>Funciona sem hipótese prévia</li>
+          <li>Qualquer coordenada no mundo</li>
+          <li>Encontra padrões que não foram programados</li>
+          <li>Compara regiões por similaridade real</li>
+        </ul>
       </div>
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
+<!-- ── PIPELINE ───────────────────────────────────────────────── -->
+<section id="pipeline">
+  <div class="container">
+    <div class="section-label">02 · Como funciona</div>
+    <h2>Do satélite à interpretação<br>em cinco etapas</h2>
+    <p style="max-width:580px">
+      Imagens de satélite viram vetores matemáticos. Vetores são comparados no tempo. 
+      O que mudou aparece. O que é estranho é sinalizado.
+    </p>
 
-<section class="cases-section" id="cases">
-  <div class="sec-tag">Top 10 Casos</div>
-  <h2 class="sec-title">Os eventos mais intensos detectados</h2>
-  <p class="sec-sub">Arraste a linha central para comparar o território em 2019 vs 2023. Imagens reais de satélite.</p>
-  <div class="cases-grid" id="top3"></div>
-  <div class="mini-row" id="mini7"></div>
-</section>
+    <div class="pipe-flow">
+      <div class="pipe-step reveal">
+        <div class="pipe-num">01</div>
+        <div class="pipe-body">
+          <h3>Coleta de dados de satélite</h3>
+          <p>Imagens de radar (Sentinel-1), imagens ópticas (Sentinel-2) e dados de luz noturna são combinados para cobrir o máximo possível do que acontece no território.</p>
+          <span class="tag">Google Earth Engine · Sentinel-1/2 · VIIRS</span>
+        </div>
+      </div>
 
-<div class="divider"></div>
+      <div class="pipe-step reveal">
+        <div class="pipe-num">02</div>
+        <div class="pipe-body">
+          <h3>Território vira número</h3>
+          <p>Cada pedaço de terra é convertido em um vetor de 64 dimensões por um modelo de IA do Google/DeepMind treinado especificamente para entender território via satélite. É a "impressão digital" matemática daquele lugar naquele momento.</p>
+          <span class="tag">Google Satellite Embeddings · 64 dimensões · IA geoespacial</span>
+        </div>
+      </div>
 
-<section class="map-section">
-  <div class="sec-tag">Mapa Interativo</div>
-  <h2 class="sec-title">Top 50 Hotspots · Brasil</h2>
-  <p class="sec-sub">Os 50 eventos de maior transformação territorial detectados entre 2017–2024. Clique em qualquer ponto para investigar no Google Earth.</p>
-  <div class="map-head">
-    <div></div>
-    <div class="legend">
-      <div class="li"><div class="ldot" style="background:#FF3B30"></div>Desmatamento</div>
-      <div class="li"><div class="ldot" style="background:#FF9500"></div>Garimpo</div>
-      <div class="li"><div class="ldot" style="background:#30D158"></div>Expansão Agrícola</div>
-      <div class="li"><div class="ldot" style="background:#0A84FF"></div>Expansão Urbana</div>
-      <div class="li"><div class="ldot" style="background:#00E5C0"></div>Mista</div>
+      <div class="pipe-step reveal">
+        <div class="pipe-num">03</div>
+        <div class="pipe-body">
+          <h3>Compara o território com ele mesmo no passado</h3>
+          <p>O sistema calcula a distância matemática entre o que um lugar era em 2017 e o que ele é hoje. Quanto maior a distância, mais aquele lugar mudou — mesmo que ninguém saiba por quê ainda.</p>
+          <span class="tag">STT = distância semântica entre dois momentos do mesmo território</span>
+        </div>
+      </div>
+
+      <div class="pipe-step reveal">
+        <div class="pipe-num">04</div>
+        <div class="pipe-body">
+          <h3>Encontra o estranho automaticamente</h3>
+          <p>Algoritmos sem supervisão identificam os pontos que se comportam de forma radicalmente diferente do entorno. Nenhum rótulo, nenhuma categoria prévia — o sistema sinaliza o que destoa.</p>
+          <span class="tag">Isolation Forest · HDBSCAN · zero rótulos</span>
+        </div>
+      </div>
+
+      <div class="pipe-step reveal">
+        <div class="pipe-num">05</div>
+        <div class="pipe-body">
+          <h3>IA local explica o que encontrou</h3>
+          <p>O Gemma 4 roda diretamente no computador, sem internet. Recebe a assinatura matemática da região anômala e gera uma explicação em linguagem humana sobre o que pode ter acontecido ali — contextualizando com o que já sabe sobre aquela parte do mundo.</p>
+          <span class="tag">Gemma 4 · Ollama · roda offline · sem servidor</span>
+        </div>
+      </div>
     </div>
   </div>
-  <div id="gmap"></div>
-  <div class="map-stats">
-    <div class="ms"><div class="ms-n">50</div><div class="ms-l">Hotspots exibidos</div></div>
-    <div class="ms"><div class="ms-n">0.763</div><div class="ms-l">TTI máximo</div></div>
-    <div class="ms"><div class="ms-n">1.096</div><div class="ms-l">Dataset completo</div></div>
-    <div class="ms"><div class="ms-n">7 anos</div><div class="ms-l">Série temporal</div></div>
+</section>
+
+<!-- ── STT ────────────────────────────────────────────────────── -->
+<section id="stt">
+  <div class="container">
+    <div class="section-label">03 · A Métrica</div>
+    <h2>STT — quanto um lugar<br>mudou em relação a si mesmo</h2>
+
+    <div class="stt-wrap">
+      <div class="stt-concept reveal">
+        <p>
+          O STT (Semantic Territorial Transformation) é um número entre 0 e 1 
+          que indica o quanto um território mudou entre dois momentos no tempo.
+        </p>
+        <p>
+          Não compara pixels. Compara o que a IA "entende" sobre aquele lugar 
+          em cada período. Se o entendimento mudou muito, alguma coisa real aconteceu ali.
+        </p>
+        <div class="formula">
+          <span class="hl">STT = 0.76</span> no Rio São Francisco<br>
+          <br>
+          O rio se tornou irreconhecível para si mesmo.<br>
+          Nenhuma categoria de monitoramento<br>
+          foi necessária para detectar isso.
+        </div>
+        <p>
+          O mesmo motor que detectou a degradação do São Francisco 
+          encontrou expansão de energia renovável no Nordeste, obras 
+          industriais na Bahia, e o Cerrado brasileiro por similaridade — 
+          sem que nenhum desses padrões fosse antecipado.
+        </p>
+      </div>
+
+      <div class="stt-table reveal">
+        <div class="stt-row stt-row-header">
+          <div>STT</div>
+          <div>Intensidade</div>
+          <div>Significa</div>
+        </div>
+        <div class="stt-row">
+          <div class="stt-range">0.00 – 0.05</div>
+          <div><div class="stt-bar" style="background:#22c55e;width:15%;height:4px"></div></div>
+          <div class="stt-interp" style="color:var(--green)">Território estável</div>
+        </div>
+        <div class="stt-row">
+          <div class="stt-range">0.05 – 0.10</div>
+          <div><div class="stt-bar" style="background:#eab308;width:35%"></div></div>
+          <div class="stt-interp" style="color:#eab308">Mudança moderada</div>
+        </div>
+        <div class="stt-row">
+          <div class="stt-range">0.10 – 0.30</div>
+          <div><div class="stt-bar" style="background:#f97316;width:65%"></div></div>
+          <div class="stt-interp" style="color:#f97316">Mudança significativa</div>
+        </div>
+        <div class="stt-row">
+          <div class="stt-range">> 0.30</div>
+          <div><div class="stt-bar" style="background:var(--red);width:100%"></div></div>
+          <div class="stt-interp" style="color:var(--red)">Transformação extrema</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trajetória real -->
+    <div class="traj-wrap reveal" style="margin-top:56px">
+      <div class="traj-title">MATOPIBA / MA · Trajetória STT acumulada (2017=base) · Dados reais do pipeline</div>
+      <div class="traj-chart" id="traj-chart"></div>
+      <div style="display:flex;gap:32px;margin-top:16px;flex-wrap:wrap">
+        <span class="mono muted" style="font-size:11px">● Barra = STT médio da região no período</span>
+        <span class="mono" style="font-size:11px;color:var(--amber)">◀ Salto 2020→2021 = 0.069 (anomalia detectada)</span>
+      </div>
+    </div>
   </div>
 </section>
 
-<section class="meth" id="meth">
-  <div class="sec-tag">Metodologia</div>
-  <h2 class="sec-title">Como o GhostWorks detecta</h2>
-  <div class="meth-grid">
-    <div class="mcard"><div class="mn">01</div><div class="mt">Imagens de Satélite</div><div class="md">Google Earth Engine + Sentinel-2. Cobertura anual de todos os 5.568 municípios.</div></div>
-    <div class="mcard"><div class="mn">02</div><div class="mt">AlphaEarth Embeddings</div><div class="md">Embeddings semânticos territoriais. Captura padrões invisíveis para análise espectral tradicional.</div></div>
-    <div class="mcard"><div class="mn">03</div><div class="mt">Score TTI</div><div class="md">Territorial Transformation Index: NDVI × Luminosidade × Infraestrutura × sinal semântico composto.</div></div>
-    <div class="mcard"><div class="mn">04</div><div class="mt">Detecção de Anomalias</div><div class="md">Clustering geoespacial identifica eventos anômalos. Validado com Planet Labs a 3m de resolução.</div></div>
+<!-- ── EXPLORAÇÕES ────────────────────────────────────────────── -->
+<section id="exploracoes">
+  <div class="container">
+    <div class="section-label">04 · Na Prática</div>
+    <h2>O que o sistema encontrou<br>sem ser pedido para procurar</h2>
+    <p style="max-width:600px">
+      Nenhum dos padrões abaixo foi programado. Todos emergiram da 
+      exploração aberta — Brasil, América do Sul, e qualquer coordenada no mundo.
+    </p>
+
+    <div class="cases-grid">
+
+      <div class="case-card reveal">
+        <div class="case-tag">CERRADO · Brasil Central</div>
+        <h3>O sistema encontrou um bioma sem saber que ele existia</h3>
+        <p>Partindo de uma coordenada no Maranhão, o sistema buscou regiões parecidas na América do Sul. As 10 mais similares estavam todas no Cerrado — sem nenhuma informação de bioma ou vegetação.</p>
+        <div class="case-metrics">
+          <div class="case-metric">
+            <span class="case-metric-label">Similaridade máxima encontrada</span>
+            <span class="case-metric-val cyan">0.965</span>
+          </div>
+          <div class="case-metric">
+            <span class="case-metric-label">Regiões identificadas</span>
+            <span class="case-metric-val amber">10 no Cerrado</span>
+          </div>
+          <div class="case-metric">
+            <span class="case-metric-label">Informação de bioma fornecida</span>
+            <span class="case-metric-val muted">Nenhuma</span>
+          </div>
+          <div class="case-metric">
+            <span class="case-metric-label">STT extremo detectado</span>
+            <span class="case-metric-val">0.364 no cluster</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="case-card reveal">
+        <div class="case-tag">REFINARIA · Candeias, Bahia</div>
+        <h3>Obras não declaradas detectadas por satélite</h3>
+        <p>Terraplanagem industrial em larga escala e alteração visível no Rio Joanes foram detectadas automaticamente. O território não mente — mesmo que o relatório ESG omita.</p>
+        <div class="case-metrics">
+          <div class="case-metric">
+            <span class="case-metric-label">Alteração no Rio Joanes (radar)</span>
+            <span class="case-metric-val red">+7.19 dB</span>
+          </div>
+          <div class="case-metric">
+            <span class="case-metric-label">Perda de vegetação detectada</span>
+            <span class="case-metric-val red">−0.741</span>
+          </div>
+          <div class="case-metric">
+            <span class="case-metric-label">Período</span>
+            <span class="case-metric-val">2019 → 2023</span>
+          </div>
+          <div class="case-metric">
+            <span class="case-metric-label">Evidência</span>
+            <span class="case-metric-val amber">Auditável por satélite</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="case-card reveal">
+        <div class="case-tag">NORDESTE · Expansão de energia renovável</div>
+        <h3>O que estava mudando mais rápido não era o que todo mundo achava</h3>
+        <p>O pipeline analisou 5.568 municípios brasileiros. Os estados mais transformados não eram na Amazônia — eram no Nordeste, por expansão de infraestrutura de energia renovável. Resultado emergente, não planejado.</p>
+        <div class="case-metrics">
+          <div class="case-metric">
+            <span class="case-metric-label">Municípios analisados</span>
+            <span class="case-metric-val">5.568</span>
+          </div>
+          <div class="case-metric">
+            <span class="case-metric-label">Resultado esperado</span>
+            <span class="case-metric-val muted">Amazônia no topo</span>
+          </div>
+          <div class="case-metric">
+            <span class="case-metric-label">Resultado real</span>
+            <span class="case-metric-val cyan">Nordeste no topo</span>
+          </div>
+          <div class="case-metric">
+            <span class="case-metric-label">Hipótese prévia</span>
+            <span class="case-metric-val muted">Nenhuma</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="case-card reveal">
+        <div class="case-tag">GLOBAL · Qualquer coordenada</div>
+        <h3>O motor funciona em qualquer lugar do planeta</h3>
+        <p>O mesmo pipeline roda para Groenlândia, Sahel, Indonésia, fronteiras de conflito — qualquer coordenada entre -60° e 75° de latitude. A escala é o planeta.</p>
+        <div class="case-metrics">
+          <div class="case-metric">
+            <span class="case-metric-label">Cobertura</span>
+            <span class="case-metric-val cyan">Global</span>
+          </div>
+          <div class="case-metric">
+            <span class="case-metric-label">Período disponível</span>
+            <span class="case-metric-val">2017 → 2024</span>
+          </div>
+          <div class="case-metric">
+            <span class="case-metric-label">Resolução espacial</span>
+            <span class="case-metric-val amber">100m – 10km</span>
+          </div>
+          <div class="case-metric">
+            <span class="case-metric-label">Internet necessária</span>
+            <span class="case-metric-val green">Não (Ollama local)</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Similares visuais -->
+    <div style="margin-top:40px" class="reveal">
+      <div class="mono muted" style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;margin-bottom:16px">
+        Top 10 regiões similares · MATOPIBA como referência · 2023
+      </div>
+      <div class="similar-grid">
+        <div class="sim-item">
+          <div class="sim-coords">−13.08, −52.00</div>
+          <div class="sim-score">0.965</div>
+          <div class="sim-label">Mato Grosso — froneira agro</div>
+        </div>
+        <div class="sim-item">
+          <div class="sim-coords">−12.50, −51.54</div>
+          <div class="sim-score">0.961</div>
+          <div class="sim-label">MT/PA — savana agrícola</div>
+        </div>
+        <div class="sim-item">
+          <div class="sim-coords">−14.03, −53.01</div>
+          <div class="sim-score">0.954</div>
+          <div class="sim-label">Mato Grosso</div>
+        </div>
+        <div class="sim-item">
+          <div class="sim-coords">−8.67, −48.64</div>
+          <div class="sim-score">0.949</div>
+          <div class="sim-label">Tocantins</div>
+        </div>
+        <div class="sim-item">
+          <div class="sim-coords">−19.04, −52.29</div>
+          <div class="sim-score">0.945</div>
+          <div class="sim-label">MS/GO — cerrado central</div>
+        </div>
+        <div class="sim-item">
+          <div class="sim-coords">−18.69, −51.66</div>
+          <div class="sim-score">0.939</div>
+          <div class="sim-label">Goiás</div>
+        </div>
+        <div class="sim-item">
+          <div class="sim-coords">−17.41, −46.85</div>
+          <div class="sim-score">0.939</div>
+          <div class="sim-label">MG — cerrado mineiro</div>
+        </div>
+        <div class="sim-item">
+          <div class="sim-coords">−16.66, −45.58</div>
+          <div class="sim-score">0.937</div>
+          <div class="sim-label">Norte de MG</div>
+        </div>
+        <div class="sim-item">
+          <div class="sim-coords">−5.99, −48.85</div>
+          <div class="sim-score">0.937</div>
+          <div class="sim-label">Sul do Pará</div>
+        </div>
+        <div class="sim-item">
+          <div class="sim-coords">−14.57, −55.54</div>
+          <div class="sim-score">0.926</div>
+          <div class="sim-label">MT — fronteira sul</div>
+        </div>
+      </div>
+      <div class="mono muted" style="font-size:10px;margin-top:12px;letter-spacing:.1em">
+        * sistema não recebeu informação de bioma, estado ou uso do solo — padrão emergiu inteiramente da similaridade vetorial
+      </div>
+    </div>
   </div>
 </section>
 
-<footer>
-  <div><div class="ft">// Sobre</div><p class="fb"><strong>LuxVerso Research Initiative</strong><br/>Salvador, Bahia<br/>Pesquisa independente em<br/>inteligência territorial aplicada.</p></div>
-  <div><div class="ft">// Dataset</div><p class="fb"><strong>5.568</strong> municípios<br/><strong>7 anos</strong> · 2017–2024<br/>Google Earth Engine · Sentinel-2<br/>AlphaEarth · Planet Labs</p></div>
-  <div><div class="ft">// Créditos</div><p class="fb">Análise: <strong>Vini Buri</strong><br/>Piloto: <strong>Paulo Wataru / Gnuvem</strong><br/>Território de Identidade Itaparica<br/><em style="color:var(--text-dim)">Pesquisa científica</em></p></div>
-  <div class="fbadge">
-    <div class="flogo">GHOST<span>WORKS</span> RADAR // LUXVERSO RESEARCH // 2024</div>
-    <div class="fcr">5.568 municípios · 7 anos · 1.096 hotspots detectados</div>
+<!-- ── CAPACIDADES ────────────────────────────────────────────── -->
+<section id="capacidades">
+  <div class="container">
+    <div class="section-label">05 · O que o sistema faz</div>
+    <h2>Seis capacidades,<br>zero hipóteses prévias</h2>
+
+    <div class="cap-grid">
+      <div class="cap-item reveal">
+        <div class="cap-icon">◈ DETECÇÃO</div>
+        <h3>Transformação territorial</h3>
+        <p>Identifica mudanças semânticas em qualquer coordenada global, em qualquer período entre 2017–2024, sem categorias pré-definidas.</p>
+      </div>
+      <div class="cap-item reveal">
+        <div class="cap-icon">≈ SIMILARIDADE</div>
+        <h3>Busca semântica global</h3>
+        <p>Encontra regiões semanticamente análogas no mundo — sem rótulos, sem classes, por pura proximidade no espaço vetorial 64D.</p>
+      </div>
+      <div class="cap-item reveal">
+        <div class="cap-icon">⚡ ANOMALIA</div>
+        <h3>Detecção de outliers</h3>
+        <p>Isolation Forest sem supervisão identifica pixels com comportamento semântico radicalmente diferente do entorno.</p>
+      </div>
+      <div class="cap-item reveal">
+        <div class="cap-icon">◉ CLUSTERS</div>
+        <h3>Estrutura territorial latente</h3>
+        <p>HDBSCAN revela sub-territórios distintos dentro de uma janela geográfica — sem que nenhuma classe tenha sido definida.</p>
+      </div>
+      <div class="cap-item reveal">
+        <div class="cap-icon">→ TRAJETÓRIA</div>
+        <h3>Exploração temporal</h3>
+        <p>Trajetória STT ano a ano + detecção do ponto de inflexão. Quando aconteceu, não apenas quanto mudou.</p>
+      </div>
+      <div class="cap-item reveal">
+        <div class="cap-icon">◎ INTERPRETAÇÃO</div>
+        <h3>Camada cognitiva local</h3>
+        <p>Gemma 4 via Ollama transforma assinaturas multi-sensor em relatório de inteligência territorial em linguagem natural — offline, sem API externa.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PESQUISA ───────────────────────────────────────────────── -->
+<section id="pesquisa">
+  <div class="container">
+    <div class="section-label">06 · Pesquisa</div>
+    <h2>Infraestrutura científica</h2>
+    <p style="max-width:580px;margin-bottom:48px">
+      GhostWorks é desenvolvido dentro do framework <em>Living Research</em> — 
+      metodologia que trata LLMs como co-processadores cognitivos integrados 
+      ao processo de descoberta.
+    </p>
+
+    <div class="reveal">
+      <div class="research-row">
+        <div class="research-badge active">ACM CHI 2026</div>
+        <div class="research-body">
+          <h3>When Semantic Convergence Undermines Epistemic Agency</h3>
+          <p>Workshop HEAL · Barcelona, 2026 · Estabilização semântica humano-induzida e a ilusão de consenso em avaliação multi-modelo de LLMs.</p>
+        </div>
+      </div>
+
+      <div class="research-row">
+        <div class="research-badge active">ACM CHI 2026</div>
+        <div class="research-body">
+          <h3>Beyond Generation: Human-Induced Semantic Stabilization</h3>
+          <p>Workshop InterAI · Barcelona, 2026 · Autoridade semântica e convergência estrutural em sistemas de IA.</p>
+        </div>
+      </div>
+
+      <div class="research-row">
+        <div class="research-badge">Zenodo / DOI</div>
+        <div class="research-body">
+          <h3>Portfolio de preprints abertos</h3>
+          <p>CMOTP Protocol, Semantic Authority, CMAF — infraestrutura de avaliação de falha estrutural de assurance em sistemas acoplados.</p>
+          <a class="research-link" href="https://orcid.org/0009-0000-6006-1516" target="_blank">ORCID: 0009-0000-6006-1516 ↗</a>
+        </div>
+      </div>
+
+      <div class="research-row">
+        <div class="research-badge">GitHub Pages</div>
+        <div class="research-body">
+          <h3>viniburilux.github.io</h3>
+          <p>Site de pesquisa público com pipeline, datasets, notebooks e documentação técnica do GhostWorks.</p>
+          <a class="research-link" href="https://viniburilux.github.io" target="_blank">viniburilux.github.io ↗</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SOBRE ──────────────────────────────────────────────────── -->
+<section id="sobre">
+  <div class="container">
+    <div class="section-label">07 · Sobre</div>
+    <h2>Pesquisador independente,<br>Salvador, Bahia</h2>
+
+    <div class="sobre-wrap">
+      <div class="sobre-text reveal">
+        <p>
+          Sou Vinícius Buril, pesquisador independente de Salvador, Bahia, 34 anos. 
+          Nos últimos meses desenvolvi sistemas de pesquisa assistidos por IA focados 
+          em duas frentes: avaliação de modelos de linguagem e inteligência territorial.
+        </p>
+        <p>
+          O GhostWorks nasceu da mesma metodologia que uso nos meus trabalhos de pesquisa 
+          em IA — aplicada agora ao território físico. Toda a infraestrutura foi construída 
+          de forma independente, com recursos mínimos e dados abertos.
+        </p>
+        <p>
+          Tenho dois artigos aceitos no ACM CHI 2026 em Barcelona, um portfólio de 
+          preprints no Zenodo e um pipeline territorial funcionando que cobre 
+          qualquer coordenada no planeta.
+        </p>
+      </div>
+
+      <div class="sobre-links reveal">
+        <div class="sobre-link-item">
+          <span class="sobre-link-name">Site de pesquisa</span>
+          <a class="sobre-link-url" href="https://viniburilux.github.io" target="_blank">viniburilux.github.io</a>
+        </div>
+        <div class="sobre-link-item">
+          <span class="sobre-link-name">ORCID</span>
+          <a class="sobre-link-url" href="https://orcid.org/0009-0000-6006-1516" target="_blank">0009-0000-6006-1516</a>
+        </div>
+        <div class="sobre-link-item">
+          <span class="sobre-link-name">LinkedIn</span>
+          <a class="sobre-link-url" href="https://linkedin.com/in/viniburilux" target="_blank">viniburilux</a>
+        </div>
+        <div class="sobre-link-item">
+          <span class="sobre-link-name">CHI 2026 · HEAL Workshop</span>
+          <a class="sobre-link-url" href="#pesquisa">aceito · Barcelona</a>
+        </div>
+        <div class="sobre-link-item">
+          <span class="sobre-link-name">CHI 2026 · InterAI Workshop</span>
+          <a class="sobre-link-url" href="#pesquisa">aceito · Barcelona</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ─────────────────────────────────────────────────── -->
+<footer class="container">
+  <div class="footer-left">
+    GHOSTWORKS · LUXVERSO RESEARCH INITIATIVE · 2026
+  </div>
+  <div class="footer-right">
+    Sentinel-1 SAR · Sentinel-2 NDVI<br>
+    Google/DeepMind Satellite Embeddings · GEE
   </div>
 </footer>
 
+<!-- ── SCRIPTS ────────────────────────────────────────────────── -->
 <script>
-const TOP50=[{"lat":-9.91354138,"lon":-42.16492609,"stt":0.7631272078,"ndvi_change":-0.420155,"lights_change":0.114062503,"built_change":-0.0088676611,"cluster":1},{"lat":-9.9542343337,"lon":-42.1623373686,"stt":0.6514576674,"ndvi_change":-0.67953,"lights_change":0.0963541716,"built_change":-0.0077226752,"cluster":1},{"lat":-7.0714688323,"lon":-62.9916849433,"stt":0.5211887956,"ndvi_change":-0.115925,"lights_change":0.0228645802,"built_change":0.0144071297,"cluster":1},{"lat":-6.4252213016,"lon":-53.2730274186,"stt":0.4543140233,"ndvi_change":-0.2628166667,"lights_change":0.06416668,"built_change":0.0077991626,"cluster":1},{"lat":-20.5016662598,"lon":-53.8960404933,"stt":0.4345535934,"ndvi_change":0.3777333333,"lights_change":0.125104174,"built_change":-0.0064377718,"cluster":1},{"lat":-11.6567932339,"lon":-55.066618818,"stt":0.4208051264,"ndvi_change":-0.0456416667,"lights_change":0.1333854198,"built_change":0.0018225233,"cluster":1},{"lat":-9.5415614241,"lon":-64.4290739559,"stt":0.4063982666,"ndvi_change":-0.0862583333,"lights_change":-0.0211979151,"built_change":-0.0055158221,"cluster":1},{"lat":-20.2691931144,"lon":-53.573648121,"stt":0.3950938284,"ndvi_change":0.3014166667,"lights_change":0.1429166645,"built_change":-0.0183936417,"cluster":1},{"lat":-8.8544142487,"lon":-66.6880288764,"stt":0.3891433775,"ndvi_change":-0.0801666667,"lights_change":0.0202604085,"built_change":-0.0059437699,"cluster":1},{"lat":-9.9077706091,"lon":-64.7596185507,"stt":0.3794273436,"ndvi_change":-0.0512416667,"lights_change":0.0268229097,"built_change":-0.001643099,"cluster":1}];
-const RANKING=[{"rank":1,"estado":"Bahia","stt_medio":0.0553,"stt_max":0.178,"municipio_lider":"Itapé","n_municipios":413,"pct_alta":36.6},{"rank":2,"estado":"Mato Grosso do Sul","stt_medio":0.0524,"stt_max":0.137,"municipio_lider":"Laguna Carapã","n_municipios":77,"pct_alta":27.3},{"rank":3,"estado":"Alagoas","stt_medio":0.0480,"stt_max":0.131,"municipio_lider":"Major Isidoro","n_municipios":101,"pct_alta":13.9},{"rank":4,"estado":"Pernambuco","stt_medio":0.0472,"stt_max":0.198,"municipio_lider":"Sanharó","n_municipios":185,"pct_alta":17.8},{"rank":5,"estado":"Rio Grande do Norte","stt_medio":0.0453,"stt_max":0.165,"municipio_lider":"Ruy Barbosa","n_municipios":166,"pct_alta":16.9},{"rank":6,"estado":"Rio Grande do Sul","stt_medio":0.0449,"stt_max":0.203,"municipio_lider":"Barra do Quaraí","n_municipios":467,"pct_alta":11.6},{"rank":7,"estado":"Paraná","stt_medio":0.0445,"stt_max":0.188,"municipio_lider":"Maripá","n_municipios":399,"pct_alta":14.5},{"rank":8,"estado":"Sergipe","stt_medio":0.0442,"stt_max":0.146,"municipio_lider":"Carira","n_municipios":76,"pct_alta":14.5},{"rank":9,"estado":"Roraima","stt_medio":0.0436,"stt_max":0.158,"municipio_lider":"Pacaraima","n_municipios":15,"pct_alta":20.0},{"rank":10,"estado":"Paraíba","stt_medio":0.0429,"stt_max":0.171,"municipio_lider":"Mulungu","n_municipios":223,"pct_alta":1.8}];
-const IMG={
-  p05b:"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
-  p05a:"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
-  p08b:"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
-  p08a:"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
-  p10b:"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7",
-  p10a:"data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
-};
+/* ── CANVAS HERO ANIMATION ──────────────────────────────────── */
+(function() {
+  const canvas = document.getElementById('hero-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, pts = [], lines = [];
+  const amber = 'rgba(245,158,11,';
+  const cyan  = 'rgba(34,211,238,';
 
-const TM={
-  1:{l:'Desmatamento',c:'#FF3B30',k:'td'},
-  2:{l:'Garimpo',c:'#FF9500',k:'tm'},
-  3:{l:'Agrícola',c:'#30D158',k:'ta'},
-  4:{l:'Urbano',c:'#0A84FF',k:'tu'},
-  5:{l:'Misto',c:'#00E5C0',k:'tx'}
-};
-
-function fmt(v){return(v>0?'+':'')+v.toFixed(3)}
-function fmt3(v){return v.toFixed(3)}
-function classify(d){return d.cluster||5}
-function earth(lat,lon){return `https://earth.google.com/web/@${lat},${lon},500d,35y,0h,0t,0r`}
-function typebadge(d){const t=classify(d),m=TM[t];return `<span class="ctype ${m.k}">${m.l}</span>`}
-function ctitle(d){return d.name||"Evento de Transformação"}
-function chcls(v,inv){if(v==0)return '';if(inv)return v<0?'p':'n';return v>0?'p':'n'}
-
-function buildRanking(){
-  const mx=Math.max(...RANKING.map(r=>r.stt_medio));
-  document.getElementById('rc').innerHTML=RANKING.map((r,i)=>{
-    const ne=[1,3,4,5,8,10].includes(r.rank);
-    return`<div class="rank-row" id="rr${i}">
-      <div class="rank-num">${r.rank}</div>
-      <div class="rank-bwrap">
-        <div class="rank-bar${ne?' ne':''}" id="rb${i}"></div>
-        <div class="rank-blabel"><span>${r.estado}</span><span class="rank-pct">${r.stt_medio.toFixed(4)}</span></div>
-      </div>
-    </div>`;
-  }).join('');
-  setTimeout(()=>{
-    RANKING.forEach((_,i)=>{
-      const pct=(RANKING[i].stt_medio/mx*100).toFixed(1);
-      document.getElementById(`rr${i}`).classList.add('vis');
-      setTimeout(()=>{const b=document.getElementById(`rb${i}`);if(b)b.style.width=pct+'%'},i*70+200);
-    });
-  },200);
-}
-
-function initSlider(id){
-  const wrap=document.getElementById(`iw${id}`);
-  const afimg=document.getElementById(`ai${id}`);
-  const ln=document.getElementById(`sl${id}`);
-  const hd=document.getElementById(`sh${id}`);
-  if(!wrap)return;
-  let drag=false;
-  function setPos(x){
-    const r=wrap.getBoundingClientRect();
-    const p=Math.max(0,Math.min(1,(x-r.left)/r.width));
-    afimg.style.clipPath=`inset(0 ${((1-p)*100).toFixed(1)}% 0 0)`;
-    ln.style.left=hd.style.left=(p*100).toFixed(1)+'%';
+  function resize() {
+    W = canvas.width  = canvas.offsetWidth;
+    H = canvas.height = canvas.offsetHeight;
+    initPts();
   }
-  const sz=document.getElementById(`sz${id}`);
-  sz.addEventListener('mousedown',e=>{drag=true;setPos(e.clientX);e.preventDefault();});
-  sz.addEventListener('touchstart',e=>{drag=true;setPos(e.touches[0].clientX);},{passive:true});
-  window.addEventListener('mousemove',e=>{if(drag)setPos(e.clientX)});
-  window.addEventListener('touchmove',e=>{if(drag)setPos(e.touches[0].clientX)},{passive:true});
-  window.addEventListener('mouseup',()=>drag=false);
-  window.addEventListener('touchend',()=>drag=false);
-}
 
-const FEAT=[
-  {...TOP50[0],ib:IMG.p05b,ia:IMG.p05a,sid:'Sentinel·P05'},
-  {...TOP50[3],ib:IMG.p08b,ia:IMG.p08a,sid:'Sentinel·P08'},
-  {...TOP50[5],ib:IMG.p10b,ia:IMG.p10a,sid:'Sentinel·P10'},
-];
+  function initPts() {
+    pts = [];
+    const n = Math.floor((W * H) / 28000);
+    for (let i = 0; i < n; i++) {
+      pts.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        vx: (Math.random() - .5) * .18,
+        vy: (Math.random() - .5) * .18,
+        r: Math.random() * 1.8 + .4,
+        pulse: Math.random() * Math.PI * 2,
+        hot: Math.random() < .12,
+      });
+    }
+  }
 
-function buildTop3(){
-  document.getElementById('top3').innerHTML=FEAT.map((d,i)=>{
-    return`<div class="case-card">
-      <div class="iw" id="iw${i}">
-        <img class="img-b" src="${d.ib}"/>
-        <img class="img-a" id="ai${i}" src="${d.ia}"/>
-        <div class="ybadge bef">2019</div>
-        <div class="ybadge aft">2023</div>
-        <div class="sat-badge">🛰 ${d.sid}</div>
-        <div class="slider-zone" id="sz${i}">
-          <div class="sline" id="sl${i}"></div>
-          <div class="shandle" id="sh${i}">⟷</div>
-        </div>
-      </div>
-      <div class="cbody">
-        <div class="crank"><span>#${i+1} de 1.096</span>${typebadge(d)}</div>
-        <div class="cname">${ctitle(d)}</div>
-        <div class="ccoords">${d.lat.toFixed(4)}°, ${d.lon.toFixed(4)}° · TTI ${fmt3(d.stt)}</div>
-        <div class="cmetrics">
-          <div class="metric"><div class="mlabel">Vegetação</div><div class="mval ${chcls(d.ndvi_change,true)}">${fmt(d.ndvi_change)}</div></div>
-          <div class="metric"><div class="mlabel">Luminosidade</div><div class="mval ${chcls(d.lights_change,false)}">${fmt(d.lights_change)}</div></div>
-          <div class="metric"><div class="mlabel">Score TTI</div><div class="mval x">${fmt3(d.stt)}</div></div>
-          <div class="metric"><div class="mlabel">Estrutura</div><div class="mval ${chcls(d.built_change,false)}">${fmt(d.built_change)}</div></div>
-        </div>
-        <a class="earth-btn" href="${earth(d.lat,d.lon)}" target="_blank">🌍 &nbsp;Abrir no Google Earth</a>
-      </div>
-    </div>`;
-  }).join('');
-  [0,1,2].forEach(initSlider);
-}
+  function drawGrid() {
+    ctx.strokeStyle = 'rgba(245,158,11,0.04)';
+    ctx.lineWidth = .5;
+    const step = 60;
+    for (let x = 0; x < W; x += step) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+    for (let y = 0; y < H; y += step) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+  }
 
-function buildMini(){
-  document.getElementById('mini7').innerHTML=TOP50.slice(3,10).map((d,i)=>{
-    const t=classify(d),m=TM[t],pct=(d.stt/TOP50[0].stt*100).toFixed(0);
-    return`<div class="mini" onclick="window.open('${earth(d.lat,d.lon)}','_blank')">
-      <div class="mini-rk">#${i+4} / 1096</div>
-      <div class="mini-stt">${fmt3(d.stt)}</div>
-      <div class="mini-coords">${d.lat.toFixed(2)}°<br>${d.lon.toFixed(2)}°</div>
-      <span class="ctype ${m.k}" style="font-size:9px;padding:2px 6px;align-self:flex-start">${m.l}</span>
-      <div class="mini-bar"><div class="mini-fill" style="width:${pct}%"></div></div>
-    </div>`;
-  }).join('');
-}
+  function drawCrosshair(x, y, size, color, alpha) {
+    ctx.strokeStyle = color + alpha + ')';
+    ctx.lineWidth = .7;
+    ctx.beginPath();
+    ctx.moveTo(x - size, y); ctx.lineTo(x + size, y);
+    ctx.moveTo(x, y - size); ctx.lineTo(x, y + size);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(x, y, size * .6, 0, Math.PI * 2);
+    ctx.stroke();
+  }
 
-function buildMap(){
-  const map=L.map('gmap',{center:[-12,-51],zoom:4,zoomControl:true,attributionControl:false});
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
-  const style=document.createElement('style');
-  style.textContent=`.gw-popup .leaflet-popup-content-wrapper{background:transparent;padding:0;border:none;box-shadow:none}.gw-popup .leaflet-popup-tip{background:#1E2A38}`;
-  document.head.appendChild(style);
-  TOP50.forEach((d,i)=>{
-    const t=classify(d),m=TM[t],r=6+(d.stt/TOP50[0].stt)*14;
-    const mk=L.circleMarker([d.lat,d.lon],{radius:r,fillColor:m.c,color:m.c,weight:1,opacity:.9,fillOpacity:.3}).addTo(map);
-    mk.bindPopup(`<div style="font-family:'Space Mono',monospace;font-size:11px;background:#0d1117;color:#E8EDF4;padding:12px 14px;min-width:200px;border:1px solid #1E2A38">
-      <div style="font-size:9px;color:#00E5C0;letter-spacing:.2em;text-transform:uppercase;margin-bottom:8px;padding-bottom:6px;border-bottom:1px solid #1E2A38">Transformação Detectada</div>
-      <div style="margin-bottom:8px"><span style="color:#6B7A8D">Rank:</span> <strong>#${i+1}</strong> / 1.096<br><span style="color:#6B7A8D">Score TTI:</span> <strong style="color:#FF9500">${fmt3(d.stt)}</strong><br><span style="color:#6B7A8D">Tipo:</span> <strong style="color:${m.c}">${m.l}</strong></div>
-      <div style="margin-bottom:10px;font-size:10px;color:#6B7A8D">Vegetação: <strong style="color:${d.ndvi_change<0?'#FF3B30':'#30D158'}">${fmt(d.ndvi_change)}</strong> &nbsp; Luz: <strong style="color:#FF9500">${fmt(d.lights_change)}</strong></div>
-      <a href="${earth(d.lat,d.lon)}" target="_blank" style="display:block;text-align:center;padding:8px;background:rgba(0,229,192,.08);border:1px solid #006B5A;color:#00E5C0;text-decoration:none;font-size:10px;letter-spacing:.1em">🌍 ABRIR NO GOOGLE EARTH</a>
-    </div>`,{maxWidth:260,className:'gw-popup'});
-    mk.on('mouseover',function(){this.setStyle({fillOpacity:.7,weight:2})});
-    mk.on('mouseout',function(){this.setStyle({fillOpacity:.3,weight:1})});
+  function frame(t) {
+    ctx.clearRect(0, 0, W, H);
+    drawGrid();
+
+    // connections
+    ctx.lineWidth = .4;
+    for (let i = 0; i < pts.length; i++) {
+      for (let j = i + 1; j < pts.length; j++) {
+        const dx = pts[i].x - pts[j].x;
+        const dy = pts[i].y - pts[j].y;
+        const d  = Math.sqrt(dx*dx + dy*dy);
+        if (d < 120) {
+          const alpha = (1 - d / 120) * 0.15;
+          ctx.strokeStyle = amber + alpha + ')';
+          ctx.beginPath();
+          ctx.moveTo(pts[i].x, pts[i].y);
+          ctx.lineTo(pts[j].x, pts[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // points
+    pts.forEach(p => {
+      p.x += p.vx; p.y += p.vy;
+      p.pulse += .012;
+      if (p.x < 0) p.x = W;
+      if (p.x > W) p.x = 0;
+      if (p.y < 0) p.y = H;
+      if (p.y > H) p.y = 0;
+
+      const pulse = (Math.sin(p.pulse) + 1) / 2;
+
+      if (p.hot) {
+        const grd = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 14 + pulse * 6);
+        grd.addColorStop(0,   amber + (.7 + pulse * .3) + ')');
+        grd.addColorStop(.4,  amber + '0.25)');
+        grd.addColorStop(1,   amber + '0)');
+        ctx.fillStyle = grd;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 20 + pulse * 8, 0, Math.PI * 2);
+        ctx.fill();
+
+        drawCrosshair(p.x, p.y, 8 + pulse * 2, amber, .5 + pulse * .3);
+      } else {
+        ctx.fillStyle = cyan + (.2 + pulse * .2) + ')';
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
+
+    requestAnimationFrame(frame);
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+  requestAnimationFrame(frame);
+})();
+
+/* ── TRAJECTORY CHART ────────────────────────────────────────── */
+(function() {
+  const data = [
+    { year: '2018', val: 0.04068 },
+    { year: '2019', val: 0.05244 },
+    { year: '2020', val: 0.05564 },
+    { year: '2021', val: 0.05929 },
+    { year: '2022', val: 0.06894 },
+    { year: '2023', val: 0.07815 },
+    { year: '2024', val: 0.06636 },
+  ];
+  const relData = [
+    { year: '17→18', rel: 0.04068 },
+    { year: '18→19', rel: 0.04587 },
+    { year: '19→20', rel: 0.04539 },
+    { year: '20→21', rel: 0.06869 },
+    { year: '21→22', rel: 0.04880 },
+    { year: '22→23', rel: 0.06053 },
+    { year: '23→24', rel: 0.04468 },
+  ];
+
+  const maxVal = Math.max(...data.map(d => d.val));
+  const chartH = 120;
+  const chart  = document.getElementById('traj-chart');
+  if (!chart) return;
+
+  data.forEach((d, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'traj-bar-wrap';
+
+    const heightPct = (d.val / maxVal) * 90;
+    const isSpike   = relData[i] && relData[i].rel > 0.06;
+    const color     = isSpike ? '#f59e0b' : '#3b82f6';
+
+    const bar = document.createElement('div');
+    bar.className = 'traj-bar';
+    bar.style.cssText = `height:${heightPct}%;background:${color};width:70%;`;
+
+    const valLabel = document.createElement('div');
+    valLabel.className = 'traj-bar-val mono';
+    valLabel.textContent = d.val.toFixed(4);
+    bar.appendChild(valLabel);
+
+    const yr = document.createElement('div');
+    yr.className = 'traj-year mono';
+    yr.textContent = d.year;
+
+    wrap.appendChild(bar);
+    wrap.appendChild(yr);
+    chart.appendChild(wrap);
   });
-}
+})();
 
-function counter(id,target,dur){
-  const el=document.getElementById(id);
-  if(!el)return;
-  let s=null;
-  const step=ts=>{if(!s)s=ts;const p=Math.min((ts-s)/dur,1);el.textContent=Math.round(p*target).toLocaleString('pt-BR');if(p<1)requestAnimationFrame(step)};
-  requestAnimationFrame(step);
-}
+/* ── INTERSECTION OBSERVER ───────────────────────────────────── */
+(function() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        // pipe steps stagger
+        if (e.target.classList.contains('pipe-step')) {
+          const steps = document.querySelectorAll('.pipe-step');
+          steps.forEach((s, i) => {
+            setTimeout(() => s.classList.add('visible'), i * 100);
+          });
+        }
+      }
+    });
+  }, { threshold: 0.12 });
 
-const io=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting&&x.target.id==='finding')buildRanking()}),{threshold:.1});
-
-document.addEventListener('DOMContentLoaded',()=>{
-  buildTop3();
-  buildMini();
-  buildMap();
-  counter('c1',5568,1800);
-  counter('c2',7,800);
-  counter('c3',1096,1400);
-  const f=document.getElementById('finding');
-  if(f)io.observe(f);
-});
+  document.querySelectorAll('.reveal, .pipe-step').forEach(el => observer.observe(el));
+})();
 </script>
+
 </body>
 </html>
