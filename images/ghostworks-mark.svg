@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-labelledby="title desc">
+  <title id="title">Marca GhostWorks</title>
+  <desc id="desc">Três estratos cartográficos deslocados com uma abertura central.</desc>
+  <path d="M10 52C10 29 29 11 52 11c15 0 29 8 37 20-8-5-16-7-25-7-20 0-36 16-36 36 0 8 2 15 6 21C20 75 10 65 10 52Z" fill="#0F5A52"/>
+  <path d="M20 61c0-21 17-38 38-38 12 0 23 5 30 14-6-3-13-5-20-5-17 0-30 13-30 30 0 8 3 15 8 21-15-4-26-17-26-32Z" fill="#62A77C"/>
+  <path d="M31 69c0-17 14-31 31-31 9 0 18 4 24 11-5-2-9-3-14-3-13 0-24 11-24 24 0 6 2 11 5 15-12-3-22-13-22-26Z" fill="#D0A16F"/>
+  <circle cx="55" cy="62" r="12" fill="#10211D"/>
+  <path d="M65 77c7-3 13-9 16-16 2 6 3 12 2 18-7 5-15 8-24 9 3-3 5-7 6-11Z" fill="#B4512E"/>
+</svg>
