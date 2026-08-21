@@ -55,7 +55,7 @@
         {rank:10,score:"0.808458",lat:-6.617754,lon:-46.225463,state:"na fila"}
       ];
       const map = L.map("territorial-map", {scrollWheelZoom:false, zoomControl:true, attributionControl:true});
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom:19, attribution:"&copy; OpenStreetMap contributors"}).addTo(map);
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {maxZoom:20, subdomains:"abcd", attribution:"&copy; OpenStreetMap contributors &copy; CARTO"}).addTo(map);
       const bounds = [];
       candidates.forEach((point) => {
         const coordinate = `${point.lat.toFixed(6)}, ${point.lon.toFixed(6)}`;
@@ -66,6 +66,8 @@
         bounds.push([point.lat,point.lon]);
       });
       map.fitBounds(bounds, {padding:[32,32]});
+      window.setTimeout(() => map.invalidateSize({pan:false}), 180);
+      window.addEventListener("resize", () => map.invalidateSize({pan:false}));
     </script>
   </body>
 </html>
